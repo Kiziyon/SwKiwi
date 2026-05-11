@@ -1,32 +1,28 @@
+# Android Studio
 *.iml
-.gradle
-/local.properties
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+
+# Gradle
+.gradle/
+
+# Local config
 local.properties
 
+# Build output
+/build
+/app/build
+.externalNativeBuild
+.cxx
+/captures
+
+# Signing keys
+*.jks
+app/kizi.jks
+
+# APKs
 *.apk
 
+# Crash dumps
 *.hprof
 
-# Android Studio / IntelliJ
-.idea/*
-!.idea/codeStyles/
-!.idea/inspectionProfiles/
-!.idea/runConfigurations/
-!.idea/vcs.xml
-!.idea/compiler.xml
-!.idea/misc.xml
-!.idea/jarRepositories.xml
-
-# Explicitly remove user-specific things
-.idea/workspace.xml
-.idea/tasks.xml
-.idea/caches/
-.idea/libraries/
-.idea/dictionaries/
-.idea/shelf/
-.idea/assetWizardSettings.xml
+# macOS
+.DS_Store

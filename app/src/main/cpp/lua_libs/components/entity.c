@@ -9,7 +9,7 @@
 
 SIMPLE_COMPONENT_FUNC(speed_cap, float, 0x68, 0xac, luaL_checknumber, lua_pushnumber)
 
-SIMPLE_COMPONENT_FUNC(gravity, float, 0x68, 0xac, luaL_checknumber, lua_pushnumber)
+SIMPLE_COMPONENT_FUNC(gravity, float, 0xa4, 0xe8, luaL_checknumber, lua_pushnumber)
 
 const ComponentField EntityFields[] = {
 	{"SpeedCap", speed_cap},

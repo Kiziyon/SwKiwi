@@ -12,7 +12,7 @@
 		<shape>
 			<!-- Background color -->
 			<solid android:color="#B0B0B0B0" />
-			<corners android:radius="32dp" />
+			<corners android:radius="16dp" />
 
 			<!-- Border / stroke -->
 			<stroke android:width="4dp" android:color="#89898989" />
@@ -26,7 +26,7 @@
 		<shape>
 			<!-- Background color -->
 			<solid android:color="#5b5b5b5b" />
-			<corners android:radius="32dp" />
+			<corners android:radius="16dp" />
 
 			<!-- Border / stroke -->
 			<stroke android:width="4dp" android:color="#89898989" />

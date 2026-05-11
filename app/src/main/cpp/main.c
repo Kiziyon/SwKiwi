@@ -80,6 +80,8 @@ void midLoad() {
 	/* Lua Libraries */
 	initLL_set_controls_hidden();
 	initLL_debug();
+	initLL_test();
+	initLL_charanim();
 	initLL_recreate_hero();
 	initLL_map_function();
 	initLL_character();

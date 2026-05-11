@@ -48,7 +48,6 @@ public class MainActivity extends Activity implements Runnable {
 	// public GamesSignIn gamesSignIn;
 	// public GameServices gameServices;
 	// public Analytics analytics;
-
 	private void TimerMethod() {
 		this.runOnUiThread(this);
 	}
@@ -244,7 +243,10 @@ public class MainActivity extends Activity implements Runnable {
 		MiniOverlay.mainActivityRef = new WeakReference<>(this);
 		MiniOverlay.init(this, this.mainViewLayout);
 
-		ButtonController.init(this, this.mainViewLayout);
+		ButtonController.init(
+				this,
+				findViewById(android.R.id.content)
+		);
 //		ButtonController.addButton("Test lol");
 
 //		MiniOverlay.addCheckbox("network", "Enable Networking", "Allow mod to connect to the internet");

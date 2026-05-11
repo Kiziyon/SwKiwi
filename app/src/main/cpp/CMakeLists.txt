@@ -87,6 +87,12 @@ add_library(mini SHARED
         lua_libs/mini/library.c
         lua_libs/mini/profile.c
         lua_libs/mini/arch.c
+
+        lua_libs/g/camera.c
+        lua_libs/g/button.c
+        lua_libs/g/charanim.c
+
+        lua_libs/mini/test.c
         lua_libs/mini/scene_find_all.c
         lua_libs/mini/debug.c
         lua_libs/mini/recreate_hero.c

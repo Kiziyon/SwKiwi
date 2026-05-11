@@ -16,13 +16,15 @@ static const luaL_Reg mini_lib[] = {
 
 //	{"SceneFindAll",      scene_find_all},
 
-//	{"ToggleDebug",       miniLL_toggle_debug},
+	{"ToggleDebug",       miniLL_toggle_debug},
 
 	{"SetCoinLimit",      miniCL_set_from_lua},
 
 	{"RecreateHero",      miniLL_recreate_hero},
 
 	{"map",               miniLL_the_map_function},
+
+	{"Test", miniLL_test},
 
 	{NULL, NULL}
 };

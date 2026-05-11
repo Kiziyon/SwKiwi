@@ -2,6 +2,7 @@
 #include "mini.h" /* clang-format on */
 
 #include "caver/components.h"
+#include "caver/types.h"
 #include "core/hooks.h"
 #include "lauxlib.h"
 #include "core/log.h"
@@ -11,17 +12,27 @@
 
 #define LOG_TAG "MiniRecreateHero"
 
-typedef struct {
-	float x;
-	float y;
-	float z;
-} Vector3;
-
 STATIC_DL_FUNCTION_SYMBOL(
 	GameSceneController__CreateHeroObjectAt,
 	"_ZN5Caver19GameSceneController18CreateHeroObjectAtERKNS_7Vector3Eib",
 	void, (void *this, Vector3 *location, int facing_direction, bool addToScene)
 )
+
+STATIC_DL_FUNCTION_SYMBOL(
+	BlendToMoveAnimation,
+	"_ZN5Caver27CharAnimControllerComponent20BlendToMoveAnimationEf",
+	void, (void *CharAnimControllerComponent, float time)
+)
+
+int BlendToMoveAnim(lua_State *L) {
+	SceneObject **obj = lua_touserdata(L, 1);
+	void *comp = SceneObject_ComponentWithInterface(*obj, CharAnimControllerComponent_Interface); // Make sure to have #include "components/components.h"
+	BlendToMoveAnimation(comp, 1.0f);
+}
+
+void charanim_init() {
+	dlsym_BlendToMoveAnimation();
+}
 
 // Most of this logic comes from an if block in GameSceneController::EquipItem.
 // It's the block with the CreateHeroObjectAt call.

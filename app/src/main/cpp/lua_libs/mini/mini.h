@@ -12,4 +12,6 @@ int miniLL_recreate_hero(lua_State *L);
 int miniLL_get_arch(lua_State *L);
 int miniLL_the_map_function(lua_State *L);
 
+int miniLL_test(lua_State *L);
+
 #endif //SWMINI_MINI_LUA_LIBRARY_H

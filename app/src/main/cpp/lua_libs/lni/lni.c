@@ -22,9 +22,23 @@ static int quit(lua_State *L) {
 	return lni_exec_name(L, "quit");
 }
 
+//static int newButton(lua_State *L) {
+//	return lni_exec_name(L, "NewButton");
+//}
+//static int removeButton(lua_State *L) {
+//	return lni_exec_name(L, "RemoveButton");
+//}
+//static int buttonPressed(lua_State *L) {
+//	return lni_exec_name(L, "ButtonPressed");
+//}
+
 static const luaL_Reg lni_library[] = {
 	{"Execute",         miniLL_lni_execute},
 	{"Bind",            miniLL_lni_bind},
+
+//	{"NewButton", newButton},
+//	{"RemoveButton", removeButton},
+//	{"ButtonPressed", buttonPressed},
 
 	/* The default bound functions: */
 	{"copy",            copy},
