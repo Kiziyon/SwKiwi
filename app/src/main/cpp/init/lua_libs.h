@@ -8,6 +8,7 @@ void initLL_map_function(void);
 void initLL_character(void);
 void initLL_scene_find_all(void);
 void initLL_charanim();
+void initLL_button();
 
 void initLL_test();
 

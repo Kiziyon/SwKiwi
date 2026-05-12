@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -306,6 +307,32 @@ public class ButtonController {
 			}
 			buttons.clear();
 			Log.d(LOG_TAG, "Destroyed all buttons.");
+		});
+	}
+
+	public static void hideAll() {
+		MainActivity ctx = mainActivityRef.get();
+		ViewGroup root = viewRef.get();
+		if (ctx == null || root == null) return;
+
+		ctx.runOnUiThread(() -> {
+			for (ButtonData data : buttons.values()) {
+				Button btn = data.button;
+				btn.setVisibility(Button.GONE);
+			}
+		});
+	}
+
+	public static void unhideAll() {
+		MainActivity ctx = mainActivityRef.get();
+		ViewGroup root = viewRef.get();
+		if (ctx == null || root == null) return;
+
+		ctx.runOnUiThread(() -> {
+			for (ButtonData data : buttons.values()) {
+				Button btn = data.button;
+				btn.setVisibility(Button.VISIBLE);
+			}
 		});
 	}
 

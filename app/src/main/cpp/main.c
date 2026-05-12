@@ -73,6 +73,7 @@ void midLoad() {
 	initF_cstrings();
 	initF_armor_models();
 	initF_achievements();
+	initLL_button();
 
 	/* Events */
 	initEV_profile();
