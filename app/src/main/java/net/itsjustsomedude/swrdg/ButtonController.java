@@ -348,6 +348,11 @@ public class ButtonController {
 		return data.movable.dragging;
 	}
 
+	public static boolean exists(String id) {
+		ButtonData data = buttons.get(id);
+		return data != null;
+	}
+
 	public static int getResIdByName(
 			Context ctx,
 			String resName,
@@ -469,24 +474,17 @@ public class ButtonController {
 		});
 	}
 
-	public static void setBackground(String id, String resName) {
+	public static void setBackground(String id, int resId) {
 		MainActivity ctx = mainActivityRef.get();
 		ViewGroup root = viewRef.get();
-
 		if (ctx == null || root == null)
 			return;
-
 		ctx.runOnUiThread(() -> {
 			ButtonData data = buttons.get(id);
 			if (data == null)
 				return;
-			int resId = ctx.getResources().getIdentifier(
-					resName,
-					"drawable",
-					ctx.getPackageName()
-			);
 			if (resId == 0) {
-				Log.e("MiniBtnController", "Invalid drawable: " + resName);
+				Log.e("MiniBtnController", "Invalid drawable resource ID");
 				return;
 			}
 			data.button.setBackgroundResource(resId);

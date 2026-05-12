@@ -7,29 +7,328 @@
 
 #define LOG_TAG "KiwiCButton"
 
-#define LNI_FUNC(name, java) \
-	static int name(lua_State *L) { return lni_exec_name(L, java); }
+#define BUTTON_CLASS "net/itsjustsomedude/swrdg/ButtonController"
 
-LNI_FUNC(newButton, "NewButton")
-LNI_FUNC(makeMovable, "MakeMovable")
-LNI_FUNC(deleteButton, "RemoveButton")
+static jclass getButtonClass(JNIEnv *env) {
+	return (*env)->FindClass(env, BUTTON_CLASS);
+}
 
-LNI_FUNC(buttonPressed, "ButtonPressed")
-LNI_FUNC(buttonDragged, "ButtonDragged")
+static int newButton(lua_State *L) {
+	JNIEnv *env = miniJ_get_env();
+	jclass cls = getButtonClass(env);
 
-LNI_FUNC(removeAll, "RemoveAllButtons")
-LNI_FUNC(setScaling, "SetScaling")
+	const char *id = luaL_checkstring(L, 1);
+	const char *label = luaL_checkstring(L, 2);
+
+	float x = (float)luaL_checknumber(L, 3);
+	float y = (float)luaL_checknumber(L, 4);
+
+	int width = (int)luaL_checkinteger(L, 5);
+	int height = (int)luaL_checkinteger(L, 6);
+
+	jmethodID method = (*env)->GetStaticMethodID(
+		env,
+		cls,
+		"addButton",
+		"(Ljava/lang/String;Ljava/lang/String;FFII)V"
+	);
+
+	jstring jid = (*env)->NewStringUTF(env, id);
+	jstring jlabel = (*env)->NewStringUTF(env, label);
+
+	(*env)->CallStaticVoidMethod(
+		env,
+		cls,
+		method,
+		jid,
+		jlabel,
+		x,
+		y,
+		width,
+		height
+	);
+
+	return 0;
+}
+
+static int makeMovable(lua_State *L) {
+	JNIEnv *env = miniJ_get_env();
+	jclass cls = getButtonClass(env);
+
+	const char *id = luaL_checkstring(L, 1);
+	bool snapback = lua_toboolean(L, 2);
+
+	jmethodID method = (*env)->GetStaticMethodID(
+		env, cls, "makeMovable", "(Ljava/lang/String;Z)V"
+	);
+
+	jstring jid = (*env)->NewStringUTF(env, id);
+
+	(*env)->CallStaticVoidMethod(
+		env,cls,method,jid,snapback
+	);
+
+	return 0;
+}
+
+static int deleteButton(lua_State *L) {
+	JNIEnv *env = miniJ_get_env();
+	jclass cls = getButtonClass(env);
+
+	const char *id = luaL_checkstring(L, 1);
+
+	jmethodID method = (*env)->GetStaticMethodID(
+		env,cls,"removeButton","(Ljava/lang/String;)V"
+	);
+
+	jstring jid = (*env)->NewStringUTF(env, id);
+
+	(*env)->CallStaticVoidMethod(env, cls, method, jid);
+
+	return 0;
+}
+
+static int buttonPressed(lua_State *L) {
+	JNIEnv *env = miniJ_get_env();
+	jclass cls = getButtonClass(env);
+
+	const char *id = luaL_checkstring(L, 1);
+
+	jmethodID method = (*env)->GetStaticMethodID(
+		env,cls,"isPressed","(Ljava/lang/String;)Z"
+	);
+
+	jstring jid = (*env)->NewStringUTF(env, id);
+
+	jboolean pressed =
+		(*env)->CallStaticBooleanMethod(env,cls,method,jid);
+
+	lua_pushboolean(L, pressed);
+
+	return 1;
+}
+
+static int buttonDragged(lua_State *L) {
+	JNIEnv *env = miniJ_get_env();
+	jclass cls = getButtonClass(env);
+
+	const char *id = luaL_checkstring(L, 1);
+
+	jmethodID method = (*env)->GetStaticMethodID(
+		env,
+		cls,
+		"isDragging",
+		"(Ljava/lang/String;)Z"
+	);
+
+	jstring jid = (*env)->NewStringUTF(env, id);
+
+	jboolean dragging =
+		(*env)->CallStaticBooleanMethod(env,cls,method,jid);
+
+	lua_pushboolean(L, dragging);
+
+	return 1;
+}
+
+static int buttonExists(lua_State *L) {
+	JNIEnv *env = miniJ_get_env();
+	jclass cls = getButtonClass(env);
+
+	const char *id = luaL_checkstring(L, 1);
+
+	jmethodID method = (*env)->GetStaticMethodID(
+		env, cls, "exists", "(Ljava/lang/String;)Z"
+	);
+
+	jstring jid = (*env)->NewStringUTF(env, id);
+
+	jboolean exists =
+		(*env)->CallStaticBooleanMethod(env, cls, method, jid);
+
+	lua_pushboolean(L, exists);
+	return 1;
+}
+
+static int removeAll(lua_State *L) {
+	JNIEnv *env = miniJ_get_env();
+	jclass cls = getButtonClass(env);
+
+	jmethodID method = (*env)->GetStaticMethodID(env,cls,"removeAll","()V");
+
+	(*env)->CallStaticVoidMethod(env, cls, method);
+
+	return 0;
+}
+
+static int setScaling(lua_State *L) {
+	JNIEnv *env = miniJ_get_env();
+	jclass cls = getButtonClass(env);
+
+	const char *id = luaL_checkstring(L, 1);
+
+	float scaleX = (float)luaL_checknumber(L, 2);
+	float scaleY = (float)luaL_checknumber(L, 3);
+
+	jmethodID method = (*env)->GetStaticMethodID(env,cls,"setScaling","(Ljava/lang/String;FF)V");
+
+	jstring jid = (*env)->NewStringUTF(env, id);
+
+	(*env)->CallStaticVoidMethod(env,cls,method,jid,scaleX,scaleY);
+	return 0;
+}
 
 // Text functions
-LNI_FUNC(setText, "SetText")
-LNI_FUNC(setTextScale, "SetTextScale")
-LNI_FUNC(setTextColor, "SetTextColor")
+static int setText(lua_State *L) {
+	JNIEnv *env = miniJ_get_env();
+	jclass cls = getButtonClass(env);
 
-LNI_FUNC(getPositionX, "GetPositionX")
-LNI_FUNC(getPositionY, "GetPositionY")
-LNI_FUNC(setPosition, "SetPosition")
+	const char *id = luaL_checkstring(L, 1);
+	const char *text = luaL_checkstring(L, 2);
 
-LNI_FUNC(setBGR, "SetBackgroundResource")
+	jmethodID method = (*env)->GetStaticMethodID(env,cls,"setText","(Ljava/lang/String;Ljava/lang/String;)V");
+
+	jstring jid = (*env)->NewStringUTF(env, id);
+	jstring jtext = (*env)->NewStringUTF(env, text);
+
+	(*env)->CallStaticVoidMethod(env,cls,method,jid,jtext);
+
+	return 0;
+}
+
+static int setTextScale(lua_State *L) {
+	JNIEnv *env = miniJ_get_env();
+	jclass cls = getButtonClass(env);
+
+	const char *id = luaL_checkstring(L, 1);
+	float scale = (float)luaL_checknumber(L, 2);
+
+	jmethodID method = (*env)->GetStaticMethodID(env,cls,"setTextScale","(Ljava/lang/String;F)V");
+
+	jstring jid = (*env)->NewStringUTF(env, id);
+
+	(*env)->CallStaticVoidMethod(env,cls,method,jid,scale);
+
+	return 0;
+}
+
+static int setTextColor(lua_State *L) {
+	JNIEnv *env = miniJ_get_env();
+	jclass cls = getButtonClass(env);
+
+	const char *id = luaL_checkstring(L, 1);
+	int color = (int)luaL_checkinteger(L, 2);
+
+	jmethodID method = (*env)->GetStaticMethodID(env,cls,"setTextColor","(Ljava/lang/String;I)V");
+
+	jstring jid = (*env)->NewStringUTF(env, id);
+
+	(*env)->CallStaticVoidMethod(env, cls, method, jid, color);
+	return 0;
+}
+
+static int getPositionX(lua_State *L) {
+	JNIEnv *env = miniJ_get_env();
+	jclass cls = getButtonClass(env);
+
+	const char *id = luaL_checkstring(L, 1);
+
+	jmethodID method = (*env)->GetStaticMethodID(env,cls,"getPosition","(Ljava/lang/String;)[F");
+
+	jstring jid = (*env)->NewStringUTF(env, id);
+
+	jfloatArray arr = (jfloatArray)(*env)->CallStaticObjectMethod(env,cls,method,jid);
+
+	jfloat *values = (*env)->GetFloatArrayElements(env, arr, NULL);
+
+	lua_pushnumber(L, values[0]);
+
+	(*env)->ReleaseFloatArrayElements(env,arr,values,0);
+
+	return 1;
+}
+
+static int getPositionY(lua_State *L) {
+	JNIEnv *env = miniJ_get_env();
+	jclass cls = getButtonClass(env);
+
+	const char *id = luaL_checkstring(L, 1);
+
+	jmethodID method = (*env)->GetStaticMethodID(env,cls,"getPosition","(Ljava/lang/String;)[F");
+
+	jstring jid = (*env)->NewStringUTF(env, id);
+
+	jfloatArray arr =
+		(jfloatArray)(*env)->CallStaticObjectMethod(env,cls,method,jid);
+
+	jfloat *values =
+		(*env)->GetFloatArrayElements(env, arr, NULL);
+
+	lua_pushnumber(L, values[1]);
+
+	(*env)->ReleaseFloatArrayElements(env,arr,values,0);
+
+	return 1;
+}
+
+static int getPosition(lua_State *L) {
+	JNIEnv *env = miniJ_get_env();
+	jclass cls = getButtonClass(env);
+	const char *id = luaL_checkstring(L, 1);
+
+	jmethodID method = (*env)->GetStaticMethodID(env,cls,"getPosition","(Ljava/lang/String;)[F");
+	jstring jid = (*env)->NewStringUTF(env, id);
+	jfloatArray arr =
+		(jfloatArray)(*env)->CallStaticObjectMethod(env,cls,method,jid);
+
+	jfloat *values =
+		(*env)->GetFloatArrayElements(env, arr, NULL);
+
+	lua_pushnumber(L, values[0]);
+	lua_pushnumber(L, values[1]);
+
+	(*env)->ReleaseFloatArrayElements(env,arr,values,0);
+	return 2;
+}
+
+static int setPosition(lua_State *L) {
+	JNIEnv *env = miniJ_get_env();
+	jclass cls = getButtonClass(env);
+
+	const char *id = luaL_checkstring(L, 1);
+
+	float x = (float)luaL_checknumber(L, 2);
+	float y = (float)luaL_checknumber(L, 3);
+
+	jmethodID method = (*env)->GetStaticMethodID(env,cls,"setPosition","(Ljava/lang/String;FF)V");
+
+	jstring jid = (*env)->NewStringUTF(env, id);
+
+	(*env)->CallStaticVoidMethod(env,cls,method,jid,x,y);
+
+	return 0;
+}
+
+static int setBGR(lua_State *L) {
+    JNIEnv *env = miniJ_get_env();
+    jclass cls = getButtonClass(env);
+    const char *id = luaL_checkstring(L, 1);
+    const int resId = (int)luaL_checknumber(L, 2);
+
+    jmethodID method = (*env)->GetStaticMethodID(
+        env,
+        cls,
+        "setBackground",
+		"(Ljava/lang/String;I)V"
+    );
+    if (method == NULL) {
+        return 0; // method not found
+	}
+    jstring jid = (*env)->NewStringUTF(env, id);
+    (*env)->CallStaticVoidMethod(env, cls, method, jid, resId);
+    (*env)->DeleteLocalRef(env, jid);
+    return 0;
+}
 
 static const luaL_Reg button_library[] = {
 	{"New", newButton},
@@ -38,6 +337,7 @@ static const luaL_Reg button_library[] = {
 
 	{"IsPressed", buttonPressed},
 	{"IsDragging", buttonDragged},
+	{"Exists", buttonExists},
 
 	{"DeleteAll", removeAll},
 	{"SetScaling", setScaling},
@@ -48,8 +348,9 @@ static const luaL_Reg button_library[] = {
 
 	{"GetPositionX", getPositionX},
 	{"GetPositionY", getPositionY},
-
+	{"GetPosition", getPosition},
 	{"SetPosition", setPosition},
+
 	{"SetBackgroundResource", setBGR},
 
 	{NULL, NULL}
@@ -76,21 +377,21 @@ static void unhideAllButtons() {
 }
 
 STATIC_DL_HOOK_SYMBOL(
-    GameMenu_LoadView,
-    "_ZN5Caver22GameMenuViewController8LoadViewEv",
-    void, (void *thiz)
+	GameMenu_LoadView,
+	"_ZN5Caver22GameMenuViewController8LoadViewEv",
+	void, (void *thiz)
 ) {
 	hideAllButtons();
-    orig_GameMenu_LoadView(thiz);
+	orig_GameMenu_LoadView(thiz);
 }
 
 STATIC_DL_HOOK_SYMBOL(
-    GameMenu_ViewWillDisappear,
-    "_ZN5Caver22GameMenuViewController17ViewWillDisappearEv",
-    void, (void *thiz)
+	GameMenu_ViewWillDisappear,
+	"_ZN5Caver22GameMenuViewController17ViewWillDisappearEv",
+	void, (void *thiz)
 ) {
 	unhideAllButtons();
-    orig_GameMenu_ViewWillDisappear(thiz);
+	orig_GameMenu_ViewWillDisappear(thiz);
 }
 
 STATIC_DL_HOOK_SYMBOL(
@@ -107,8 +408,8 @@ STATIC_DL_HOOK_SYMBOL(
 }
 
 void initLL_button() {
-    LOGD("Initialized Kiwi ButtonController library.");
-    hook_GameMenu_LoadView();
-    hook_GameMenu_ViewWillDisappear();
+	LOGD("Initialized Kiwi ButtonController library.");
+	hook_GameMenu_LoadView();
+	hook_GameMenu_ViewWillDisappear();
 	hook_GameSceneView_SetCinematicMode();
 }
