@@ -1,6 +1,5 @@
 #include "lauxlib.h"
 #include "lua.h"
-#include "lua_libs/lni/lni.h"
 #include "core/log.h"
 #include "core/hooks.h"
 #include "core/java.h"
@@ -178,6 +177,35 @@ static int setScaling(lua_State *L) {
 	return 0;
 }
 
+
+static int setAlpha(lua_State *L) {
+	JNIEnv *env = miniJ_get_env();
+	jclass cls = getButtonClass(env);
+
+	const char *id = luaL_checkstring(L, 1);
+	int alpha = (int)luaL_checknumber(L, 2);
+
+	jstring jid = (*env)->NewStringUTF(env, id);
+	jmethodID method = (*env)->GetStaticMethodID(
+		env,
+		cls,
+		"setAlpha",
+		"(Ljava/lang/String;I)V"
+	);
+
+	(*env)->CallStaticVoidMethod(
+		env,
+		cls,
+		method,
+		jid,
+		alpha
+	);
+
+	(*env)->DeleteLocalRef(env, jid);
+
+	return 0;
+}
+
 // Text functions
 static int setText(lua_State *L) {
 	JNIEnv *env = miniJ_get_env();
@@ -345,6 +373,34 @@ static int setBGR(lua_State *L) {
     return 0;
 }
 
+static int setBGA(lua_State *L) {
+	JNIEnv *env = miniJ_get_env();
+	jclass cls = getButtonClass(env);
+
+	const char *id = luaL_checkstring(L, 1);
+	int alpha = (int)luaL_checknumber(L, 2);
+
+	jstring jid = (*env)->NewStringUTF(env, id);
+	jmethodID method = (*env)->GetStaticMethodID(
+		env,
+		cls,
+		"setBackgroundAlpha",
+		"(Ljava/lang/String;I)V"
+	);
+
+	(*env)->CallStaticVoidMethod(
+		env,
+		cls,
+		method,
+		jid,
+		alpha
+	);
+
+	(*env)->DeleteLocalRef(env, jid);
+
+	return 0;
+}
+
 static const luaL_Reg button_library[] = {
 	{"New", newButton},
 	{"MakeMovable", makeMovable},
@@ -356,6 +412,7 @@ static const luaL_Reg button_library[] = {
 
 	{"DeleteAll", removeAll},
 	{"SetScaling", setScaling},
+	{"SetAlpha", setAlpha},
 
 	{"SetText", setText},
 	{"SetTextScale", setTextScale},
@@ -367,6 +424,7 @@ static const luaL_Reg button_library[] = {
 	{"SetPosition", setPosition},
 
 	{"SetBackgroundResource", setBGR},
+	{"SetBackgroundAlpha", setBGA},
 
 	{NULL, NULL}
 };
@@ -422,9 +480,30 @@ STATIC_DL_HOOK_SYMBOL(
 	orig_GameSceneView_SetCinematicMode(thiz, enabled, animate, unknown);
 }
 
+STATIC_DL_HOOK_SYMBOL(
+	PauseView_C,
+	"_ZN5Caver9PauseViewC2Ev",
+	void, (void *thiz)
+) {
+	hideAllButtons();
+	LOGD("Paused.");
+	orig_PauseView_C(thiz);
+}
+
+STATIC_DL_HOOK_SYMBOL(
+	PauseView_D,
+	"_ZN5Caver9PauseView10TouchEndedERKNS_7FWTouchE",
+	void, (void *thiz, void *touch)
+) {
+	unhideAllButtons();
+	orig_PauseView_D(thiz, touch);
+}
+
 void initLL_button() {
 	LOGD("Initialized Kiwi ButtonController library.");
 	hook_GameMenu_LoadView();
 	hook_GameMenu_ViewWillDisappear();
 	hook_GameSceneView_SetCinematicMode();
+	hook_PauseView_C();
+	hook_PauseView_D();
 }

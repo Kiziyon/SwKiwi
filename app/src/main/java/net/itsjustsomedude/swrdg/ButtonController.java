@@ -396,6 +396,30 @@ public class ButtonController {
 		});
 	}
 
+	public static void setBackgroundAlpha(String id, int alpha) {
+		MainActivity ctx = mainActivityRef.get();
+		ViewGroup root = viewRef.get();
+		if (ctx == null || root == null)
+			return;
+		ctx.runOnUiThread(() -> {
+			ButtonData data = buttons.get(id);
+			if (data == null) return;
+			data.button.getBackground().setAlpha(alpha);
+		});
+	}
+
+	public static void setAlpha(String id, int alpha) {
+		MainActivity ctx = mainActivityRef.get();
+		ViewGroup root = viewRef.get();
+		if (ctx == null || root == null)
+			return;
+		ctx.runOnUiThread(() -> {
+			ButtonData data = buttons.get(id);
+			if (data == null) return;
+			data.button.getBackground().setAlpha(alpha);
+		});
+	}
+
 	public static void setScaling(String id, float scaleX, float scaleY) {
 		MainActivity ctx = mainActivityRef.get();
 		ViewGroup root = viewRef.get();
