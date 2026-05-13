@@ -312,21 +312,36 @@ static int setPosition(lua_State *L) {
 static int setBGR(lua_State *L) {
     JNIEnv *env = miniJ_get_env();
     jclass cls = getButtonClass(env);
+
     const char *id = luaL_checkstring(L, 1);
-    const int resId = (int)luaL_checknumber(L, 2);
+    const char *resName = luaL_checkstring(L, 2);
 
     jmethodID method = (*env)->GetStaticMethodID(
         env,
         cls,
-        "setBackground",
-		"(Ljava/lang/String;I)V"
+        "setBackgroundResource",
+		"(Ljava/lang/String;Ljava/lang/String;)V"
     );
+
     if (method == NULL) {
-        return 0; // method not found
+        LOGE("Failed to find setBackgroundResource");
+        return 0;
 	}
+
     jstring jid = (*env)->NewStringUTF(env, id);
-    (*env)->CallStaticVoidMethod(env, cls, method, jid, resId);
+    jstring jres = (*env)->NewStringUTF(env, resName);
+
+    (*env)->CallStaticVoidMethod(
+        env,
+        cls,
+        method,
+        jid,
+		jres
+    );
+
     (*env)->DeleteLocalRef(env, jid);
+    (*env)->DeleteLocalRef(env, jres);
+
     return 0;
 }
 
