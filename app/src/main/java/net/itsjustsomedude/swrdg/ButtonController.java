@@ -2,9 +2,10 @@ package net.itsjustsomedude.swrdg;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Typeface;
+import android.os.Build;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -43,6 +44,8 @@ public class ButtonController {
 		public float baseTextSize;
 		public MovableButtonData movable;
 
+		float nw; float nh;
+
 		public ButtonData(Button button) {
 			this.button = button;
 			this.baseTextSize = button.getTextSize();
@@ -66,8 +69,8 @@ public class ButtonController {
 			String label,
 			float nx,
 			float ny,
-			int w,
-			int h
+			float w,
+			float h
 	) {
 		MainActivity ctx = mainActivityRef.get();
 		ViewGroup root = viewRef.get();
@@ -86,6 +89,12 @@ public class ButtonController {
 			btn.setTextColor(0xffffffff);
 			btn.setVisibility(Button.VISIBLE);
 			btn.setBackgroundResource(R.drawable.game_button);
+			try {
+				Typeface tf = Typeface.createFromAsset(ctx.getAssets(), "fonts/" + "megalopolis_extra.otf");
+                btn.setTypeface(tf);
+			} catch (Exception e) {
+				Log.d(LOG_TAG, String.valueOf(e));
+			}
 
 			ButtonData data = new ButtonData(btn);
 
@@ -100,17 +109,21 @@ public class ButtonController {
 						data.pressed = false;
 						break;
 				}
+
 				return false;
 			});
 
-			FrameLayout.LayoutParams lp =
-					new FrameLayout.LayoutParams(w, h);
+			data.nw = w; data.nh = h;
+			int screenW = root.getWidth();
+			int screenH = root.getHeight();
 
-			lp.leftMargin =
-					(int)(root.getWidth() * nx) - (w / 2);
+			int widthPx = (int) (screenW * w);
+			int heightPx = (int) (screenH * h);
 
-			lp.topMargin =
-					(int)(root.getHeight() * ny) - (h / 2);
+			FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(widthPx, heightPx);
+
+			lp.leftMargin = (int)(screenW * nx) - (widthPx / 2);
+			lp.topMargin = (int)(screenH * ny) - (heightPx / 2);
 
 			root.addView(btn, lp);
 			buttons.put(id, data);
@@ -210,6 +223,48 @@ public class ButtonController {
 
 				return true;
 			});
+		});
+	}
+
+	public static void setClickable(
+			String id,
+			int clickable
+	) {
+		MainActivity ctx = mainActivityRef.get();
+		ViewGroup root = viewRef.get();
+
+		if (ctx == null || root == null)
+			return;
+
+		ctx.runOnUiThread(() -> {
+			ButtonData data = buttons.get(id);
+			if (data == null) return;
+			Button btn = data.button;
+			Log.d(LOG_TAG, "Clickable: " + clickable);
+			btn.setClickable(clickable == 1);
+		});
+	}
+
+	public static void setTextFont(
+			String id,
+			String font
+	) {
+		MainActivity ctx = mainActivityRef.get();
+		ViewGroup root = viewRef.get();
+
+		if (ctx == null || root == null)
+			return;
+
+		ctx.runOnUiThread(() -> {
+			ButtonData data = buttons.get(id);
+			if (data == null) return;
+			Button btn = data.button;
+			try {
+				Typeface tf = Typeface.createFromAsset(ctx.getAssets(), "fonts/" + font);
+				btn.setTypeface(tf);
+			} catch (Exception e) {
+				Log.d(LOG_TAG, String.valueOf(e));
+			}
 		});
 	}
 
@@ -428,19 +483,20 @@ public class ButtonController {
 
 		ctx.runOnUiThread(() -> {
 			ButtonData data = buttons.get(id);
-			if (data == null)
-				return;
+			if (data == null) return;
 
 			Button btn = data.button;
+			FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) btn.getLayoutParams();
 
-			int baseW = 200;
-			int baseH = 125;
+			int newWidth = (int) (root.getWidth() * data.nw * scaleX);
+			int newHeight = (int) (root.getHeight() * data.nh * scaleY);
 
-			FrameLayout.LayoutParams lp =
-					(FrameLayout.LayoutParams) btn.getLayoutParams();
+			lp.width = newWidth;
+			lp.height = newHeight;
 
-			lp.width = (int) (baseW * scaleX);
-			lp.height = (int) (baseH * scaleY);
+			lp.leftMargin = (int)(root.getWidth() * getPosition(id)[0]) - (newWidth / 2);
+			lp.topMargin = (int)(root.getHeight() * getPosition(id)[1]) - (newHeight / 2);
+
 			btn.setLayoutParams(lp);
 		});
 	}

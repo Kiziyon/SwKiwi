@@ -22,14 +22,14 @@ static int newButton(lua_State *L) {
 	float x = (float)luaL_checknumber(L, 3);
 	float y = (float)luaL_checknumber(L, 4);
 
-	int width = (int)luaL_checkinteger(L, 5);
-	int height = (int)luaL_checkinteger(L, 6);
+	float width = (float)luaL_checknumber(L, 5);
+	float height = (float)luaL_checknumber(L, 6);
 
 	jmethodID method = (*env)->GetStaticMethodID(
 		env,
 		cls,
 		"addButton",
-		"(Ljava/lang/String;Ljava/lang/String;FFII)V"
+		"(Ljava/lang/String;Ljava/lang/String;FFFF)V"
 	);
 
 	jstring jid = (*env)->NewStringUTF(env, id);
@@ -83,6 +83,24 @@ static int deleteButton(lua_State *L) {
 	jstring jid = (*env)->NewStringUTF(env, id);
 
 	(*env)->CallStaticVoidMethod(env, cls, method, jid);
+
+	return 0;
+}
+
+static int setClickable(lua_State *L) {
+	JNIEnv *env = miniJ_get_env();
+	jclass cls = getButtonClass(env);
+
+	const char *id = luaL_checkstring(L, 1);
+	int clickable = lua_toboolean(L, 2);
+
+	jmethodID method = (*env)->GetStaticMethodID(
+		env,cls,"setClickable","(Ljava/lang/String;I)V"
+	);
+
+	jstring jid = (*env)->NewStringUTF(env, id);
+
+	(*env)->CallStaticVoidMethod(env, cls, method, jid, clickable);
 
 	return 0;
 }
@@ -220,6 +238,23 @@ static int setText(lua_State *L) {
 	jstring jtext = (*env)->NewStringUTF(env, text);
 
 	(*env)->CallStaticVoidMethod(env,cls,method,jid,jtext);
+
+	return 0;
+}
+
+static int setTextFont(lua_State *L) {
+	JNIEnv *env = miniJ_get_env();
+	jclass cls = getButtonClass(env);
+
+	const char *id = luaL_checkstring(L, 1);
+	const char *fontPath = luaL_checkstring(L, 2);
+
+	jmethodID method = (*env)->GetStaticMethodID(env,cls,"setTextFont","(Ljava/lang/String;Ljava/lang/String;)V");
+
+	jstring jid = (*env)->NewStringUTF(env, id);
+	jstring jfontText = (*env)->NewStringUTF(env, fontPath);
+
+	(*env)->CallStaticVoidMethod(env,cls,method,jid,jfontText);
 
 	return 0;
 }
@@ -404,6 +439,7 @@ static int setBGA(lua_State *L) {
 static const luaL_Reg button_library[] = {
 	{"New", newButton},
 	{"MakeMovable", makeMovable},
+	{"SetClickable", setClickable},
 	{"Delete", deleteButton},
 
 	{"IsPressed", buttonPressed},
@@ -415,6 +451,7 @@ static const luaL_Reg button_library[] = {
 	{"SetAlpha", setAlpha},
 
 	{"SetText", setText},
+	{"SetTextFont", setTextFont},
 	{"SetTextScale", setTextScale},
 	{"SetTextColor", setTextColor},
 
