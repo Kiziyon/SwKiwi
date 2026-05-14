@@ -68,7 +68,7 @@ static int L_##NAME(lua_State *L) { \
 	void *component = SceneObject_ComponentWithInterface(hero, CharControllerComponent_Interface); \
 	bool b = NAME(component);   \
     lua_pushboolean(L, b);                         \
-    return 0;                         \
+    return 1;                         \
 }
 
 VOID_FUNC(DropQuickly, "_ZN5Caver23CharControllerComponent11DropQuicklyEv")
