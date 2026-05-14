@@ -441,7 +441,6 @@ public class ButtonController {
 
 			lp.width = (int) (baseW * scaleX);
 			lp.height = (int) (baseH * scaleY);
-
 			btn.setLayoutParams(lp);
 		});
 	}
