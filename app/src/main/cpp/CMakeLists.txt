@@ -101,6 +101,7 @@ add_library(mini SHARED
         lua_libs/mini_health/health.c
 
         lua_libs/mini_character/mini_character.c
+        lua_libs/mini_character/functions.c
         lua_libs/mini_character/attributes.c
         lua_libs/mini_character/exp.c
 
