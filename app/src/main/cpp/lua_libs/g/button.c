@@ -487,24 +487,6 @@ static void unhideAllButtons() {
 }
 
 STATIC_DL_HOOK_SYMBOL(
-	GameMenu_LoadView,
-	"_ZN5Caver22GameMenuViewController8LoadViewEv",
-	void, (void *thiz)
-) {
-	hideAllButtons();
-	orig_GameMenu_LoadView(thiz);
-}
-
-STATIC_DL_HOOK_SYMBOL(
-	GameMenu_ViewWillDisappear,
-	"_ZN5Caver22GameMenuViewController17ViewWillDisappearEv",
-	void, (void *thiz)
-) {
-	unhideAllButtons();
-	orig_GameMenu_ViewWillDisappear(thiz);
-}
-
-STATIC_DL_HOOK_SYMBOL(
 	GameSceneView_SetCinematicMode,
 	"_ZN5Caver13GameSceneView23SetCinematicModeEnabledEbbb",
 	void, (void *thiz, bool enabled, bool animate, bool unknown)
@@ -517,30 +499,50 @@ STATIC_DL_HOOK_SYMBOL(
 	orig_GameSceneView_SetCinematicMode(thiz, enabled, animate, unknown);
 }
 
-STATIC_DL_HOOK_SYMBOL(
-	PauseView_C,
-	"_ZN5Caver9PauseViewC2Ev",
-	void, (void *thiz)
-) {
-	hideAllButtons();
-	LOGD("Paused.");
-	orig_PauseView_C(thiz);
+#define HIDE_HOOK(NAME, SYMBOL, SIG, ...) \
+STATIC_DL_HOOK_SYMBOL( \
+    NAME, \
+    SYMBOL, \
+    void, SIG \
+) { \
+    hideAllButtons(); \
+    orig_##NAME(__VA_ARGS__); \
 }
 
-STATIC_DL_HOOK_SYMBOL(
-	PauseView_D,
-	"_ZN5Caver9PauseView10TouchEndedERKNS_7FWTouchE",
-	void, (void *thiz, void *touch)
-) {
-	unhideAllButtons();
-	orig_PauseView_D(thiz, touch);
+#define SHOW_HOOK(NAME, SYMBOL, SIG, ...) \
+STATIC_DL_HOOK_SYMBOL( \
+    NAME, \
+    SYMBOL, \
+    void, SIG \
+) { \
+    unhideAllButtons(); \
+    orig_##NAME(__VA_ARGS__); \
 }
+
+HIDE_HOOK(GameMenu_LoadView, "_ZN5Caver22GameMenuViewController8LoadViewEv", (void *thiz), thiz)
+SHOW_HOOK(GameMenu_ViewWillDisappear, "_ZN5Caver22GameMenuViewController17ViewWillDisappearEv", (void *thiz), thiz)
+
+HIDE_HOOK(PauseView_C, "_ZN5Caver9PauseViewC2Ev", (void *thiz), thiz)
+SHOW_HOOK(PauseView_D, "_ZN5Caver9PauseView10TouchEndedERKNS_7FWTouchE", (void *thiz, void *touch), thiz, touch)
+
+HIDE_HOOK(PortalView_AnimateIn, "_ZN5Caver10PortalView9AnimateInEv", (void *thiz), thiz)
+SHOW_HOOK(PortalView_AnimateOut, "_ZN5Caver10PortalView10AnimateOutEv", (void *thiz), thiz)
+
+HIDE_HOOK(SkillPicker_Load, "_ZN5Caver25SkillPickerViewController8LoadViewEv", (void *thiz), thiz)
+SHOW_HOOK(SkillPicker_Destroy, "_ZN5Caver25SkillPickerViewControllerD0Ev", (void *thiz), thiz)
+
+HIDE_HOOK(Portal_Enter, "_ZN5Caver7MapViewC1Ev", (void *thiz), thiz)
 
 void initLL_button() {
-	LOGD("Initialized Kiwi ButtonController library.");
-	hook_GameMenu_LoadView();
-	hook_GameMenu_ViewWillDisappear();
-	hook_GameSceneView_SetCinematicMode();
-	hook_PauseView_C();
-	hook_PauseView_D();
+    LOGD("Initialized Kiwi ButtonController library.");
+    hook_GameMenu_LoadView();
+    hook_GameMenu_ViewWillDisappear();
+    hook_GameSceneView_SetCinematicMode();
+    hook_PauseView_C();
+    hook_PauseView_D();
+    hook_PortalView_AnimateIn();
+    hook_PortalView_AnimateOut();
+    hook_SkillPicker_Load();
+    hook_SkillPicker_Destroy();
+    hook_Portal_Enter();
 }
