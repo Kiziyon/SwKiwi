@@ -71,6 +71,21 @@ static int L_##NAME(lua_State *L) { \
     return 1;                         \
 }
 
+#define DIR_FUNC(NAME, SYM) \
+STATIC_DL_FUNCTION_SYMBOL( \
+	NAME, \
+	SYM, \
+	void, (void *CharControllerComponent, int dir) \
+)                            \
+static int L_##NAME(lua_State *L) {    \
+    int dir = luaL_checkinteger(L, 1);                         \
+	SceneObject *hero = get_hero(L);      \
+	if (!hero) return 0; \
+	void *component = SceneObject_ComponentWithInterface(hero, CharControllerComponent_Interface); \
+	NAME(component, dir == 1 ? 1 : -1);                         \
+    return 0;                         \
+}
+
 VOID_FUNC(DropQuickly, "_ZN5Caver23CharControllerComponent11DropQuicklyEv")
 VOID_FUNC(StartJumping, "_ZN5Caver23CharControllerComponent12StartJumpingEv")
 VOID_FUNC(StopJumping, "_ZN5Caver23CharControllerComponent11StopJumpingEv")
@@ -85,6 +100,11 @@ BOOL_FUNC(CanDoSomething, "_ZN5Caver23CharControllerComponent14CanDoSomethingEv"
 BOOL_FUNC(CanBeginCasting, "_ZN5Caver23CharControllerComponent15CanBeginCastingEv")
 BOOL_FUNC(CanUse, "_ZN5Caver23CharControllerComponent6CanUseEv")
 BOOL_FUNC(CanJump, "_ZN5Caver23CharControllerComponent7CanJumpEv")
+BOOL_FUNC(CanSwing, "_ZN5Caver23CharControllerComponent8CanSwingEv")
+BOOL_FUNC(CanPickup, "_ZN5Caver23CharControllerComponent9CanPickupEv")
+
+DIR_FUNC(StartMovingToDirection, "_ZN5Caver23CharControllerComponent22StartMovingToDirectionEi")
+DIR_FUNC(StopMovingToDirection, "_ZN5Caver23CharControllerComponent21StopMovingToDirectionEi")
 
 const luaL_Reg character_caver_functions[] = {
 	{"DropQuickly", L_DropQuickly},
@@ -101,6 +121,11 @@ const luaL_Reg character_caver_functions[] = {
 	{"CanBeginCasting", L_CanBeginCasting},
 	{"CanUse", L_CanUse},
 	{"CanJump", L_CanJump},
+	{"CanSwing", L_CanSwing},
+	{"CanPickup", L_CanPickup},
+
+	{"StartMovingToDirection", L_StartMovingToDirection},
+	{"StopMovingToDirection", L_StopMovingToDirection},
 	{NULL, NULL}
 };
 
@@ -111,5 +136,8 @@ void initLL_character_caver() {
 	dlsym_CancelCasting(); dlsym_FinishCasting(); dlsym_CanBeginCasting();
 	dlsym_CanDoSomething(); dlsym_CanUse(); dlsym_Use();
 	dlsym_Die(); dlsym_Hurt();
-	dlsym_Swing();
+	dlsym_Swing(); dlsym_CanSwing();
+	dlsym_CanPickup();
+
+	dlsym_StartMovingToDirection(); dlsym_StopMovingToDirection();
 }

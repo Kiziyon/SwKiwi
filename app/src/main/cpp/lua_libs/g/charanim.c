@@ -46,6 +46,12 @@ STATIC_DL_FUNCTION_SYMBOL(
 	bool, (void* this)
 )
 
+STATIC_DL_FUNCTION_SYMBOL(
+	IsMoving,
+	"_ZN5Caver27CharAnimControllerComponent8IsMovingEv",
+	bool, (void* this)
+)
+
 static int c_stopmoving(lua_State *L) {
 	SceneObject **o = lua_touserdata(L, 1);
 	if (!o || !*o) return 0;
@@ -124,6 +130,19 @@ static int c_isready(lua_State *L) {
 	return 1;
 }
 
+static int c_ismoving(lua_State *L) {
+	SceneObject **o = lua_touserdata(L, 1);
+	if (!o || !*o) return 0;
+
+	void *c = SceneObject_ComponentWithInterface(
+		*o, CharAnimControllerComponent_Interface);
+
+	if (!c) return 0;
+	bool isMoving = IsMoving(c);
+	lua_pushboolean(L, isMoving);
+	return 1;
+}
+
 static int c_nearlyfinished(lua_State *L) {
 	SceneObject **o = lua_touserdata(L, 1);
 	if (!o || !*o) return 0;
@@ -144,6 +163,7 @@ static const luaL_Reg button_library[] = {
 	{"BeginCasting", c_begincasting},
 	{"StartFalling", c_startfalling},
 	{"IsReadyToJump", c_isready},
+	{"IsMoving", c_ismoving},
 	{"ActionNearlyFinished", c_nearlyfinished},
 	{NULL, NULL}
 };
@@ -164,4 +184,5 @@ void initLL_charanim() {
 	dlsym_StartFalling();
 	dlsym_IsReadyToJump();
 	dlsym_ActionNearlyFinished();
+	dlsym_IsMoving();
 }
