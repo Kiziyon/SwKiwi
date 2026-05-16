@@ -95,6 +95,7 @@ VOID_FUNC(Die, "_ZN5Caver23CharControllerComponent3DieEv")
 VOID_FUNC(Use, "_ZN5Caver23CharControllerComponent3UseEv")
 VOID_FUNC(Hurt, "_ZN5Caver23CharControllerComponent4HurtEv")
 VOID_FUNC(Swing, "_ZN5Caver23CharControllerComponent5SwingEv")
+VOID_FUNC(StopSwing, "_ZN5Caver23CharControllerComponent9StopSwingEv")
 
 BOOL_FUNC(CanDoSomething, "_ZN5Caver23CharControllerComponent14CanDoSomethingEv")
 BOOL_FUNC(CanBeginCasting, "_ZN5Caver23CharControllerComponent15CanBeginCastingEv")
@@ -124,6 +125,7 @@ const luaL_Reg character_caver_functions[] = {
 	{"Use", L_Use},
 	{"Hurt", L_Hurt},
 	{"Swing", L_Swing},
+	{"StopSwing", L_StopSwing},
 
 	{"CanDoSomething", L_CanDoSomething},
 	{"CanBeginCasting", L_CanBeginCasting},
@@ -146,7 +148,7 @@ void initLL_character_caver() {
 	dlsym_CancelCasting(); dlsym_FinishCasting(); dlsym_CanBeginCasting();
 	dlsym_CanDoSomething(); dlsym_CanUse(); dlsym_Use();
 	dlsym_Die(); dlsym_Hurt();
-	dlsym_Swing(); dlsym_CanSwing();
+	dlsym_Swing(); dlsym_CanSwing(); dlsym_StopSwing();
 	dlsym_CanPickup();
 
 	dlsym_StartMovingToDirection(); dlsym_StopMovingToDirection();
