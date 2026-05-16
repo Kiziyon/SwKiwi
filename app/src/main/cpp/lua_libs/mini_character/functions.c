@@ -106,6 +106,14 @@ BOOL_FUNC(CanPickup, "_ZN5Caver23CharControllerComponent9CanPickupEv")
 DIR_FUNC(StartMovingToDirection, "_ZN5Caver23CharControllerComponent22StartMovingToDirectionEi")
 DIR_FUNC(StopMovingToDirection, "_ZN5Caver23CharControllerComponent21StopMovingToDirectionEi")
 
+static int L_SetStunTime(lua_State *L) {
+	float time = (float)lua_tonumber(L, 1);
+	SceneObject *hero = get_hero(L);
+	void *CharControllerComponent = SceneObject_ComponentWithInterface(hero, CharControllerComponent);
+	*$(float, CharControllerComponent, 0x1D0, 0x2f8) = time;
+	return 0;
+}
+
 const luaL_Reg character_caver_functions[] = {
 	{"DropQuickly", L_DropQuickly},
 	{"StartJumping", L_StartJumping},
@@ -126,6 +134,8 @@ const luaL_Reg character_caver_functions[] = {
 
 	{"StartMovingToDirection", L_StartMovingToDirection},
 	{"StopMovingToDirection", L_StopMovingToDirection},
+
+	{"SetStunTime", L_SetStunTime},
 	{NULL, NULL}
 };
 
