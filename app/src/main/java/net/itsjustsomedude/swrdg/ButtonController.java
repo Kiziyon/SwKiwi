@@ -63,7 +63,10 @@ public class ButtonController {
 		viewRef = new WeakReference<>(view);
 	}
 
-	@SuppressLint("ClickableViewAccessibility")
+	private static int getSquareBase(ViewGroup root) {
+		return Math.min(root.getWidth(), root.getHeight());
+	}
+
 	public static void addButton(
 			String id,
 			String label,
@@ -79,7 +82,6 @@ public class ButtonController {
 			return;
 
 		ctx.runOnUiThread(() -> {
-
 			if (buttons.containsKey(id))
 				return;
 
@@ -91,7 +93,7 @@ public class ButtonController {
 			btn.setBackgroundResource(R.drawable.game_button);
 			try {
 				Typeface tf = Typeface.createFromAsset(ctx.getAssets(), "fonts/" + "megalopolis_extra.otf");
-                btn.setTypeface(tf);
+				btn.setTypeface(tf);
 			} catch (Exception e) {
 				Log.d(LOG_TAG, String.valueOf(e));
 			}
@@ -103,27 +105,32 @@ public class ButtonController {
 					case MotionEvent.ACTION_DOWN:
 						data.pressed = true;
 						break;
-
 					case MotionEvent.ACTION_UP:
 					case MotionEvent.ACTION_CANCEL:
 						data.pressed = false;
 						break;
 				}
-
 				return false;
 			});
 
-			data.nw = w; data.nh = h;
+			data.nw = w;
+			data.nh = h;
+
 			int screenW = root.getWidth();
 			int screenH = root.getHeight();
+			int base = getSquareBase(root); // This would be the shortest side,
 
-			int widthPx = (int) (screenW * w);
-			int heightPx = (int) (screenH * h);
+			int widthPx  = (int)(base * w);
+			int heightPx = (int)(base * h);
 
 			FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(widthPx, heightPx);
-
 			lp.leftMargin = (int)(screenW * nx) - (widthPx / 2);
-			lp.topMargin = (int)(screenH * ny) - (heightPx / 2);
+			lp.topMargin  = (int)(screenH * ny) - (heightPx / 2);
+			btn.setTextSize(
+					android.util.TypedValue.COMPLEX_UNIT_PX,
+					heightPx * 0.35f
+			);
+			data.baseTextSize = heightPx * 0.35f;
 
 			root.addView(btn, lp);
 			buttons.put(id, data);
@@ -488,14 +495,19 @@ public class ButtonController {
 			Button btn = data.button;
 			FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) btn.getLayoutParams();
 
-			int newWidth = (int) (root.getWidth() * data.nw * scaleX);
-			int newHeight = (int) (root.getHeight() * data.nh * scaleY);
+			int base = getSquareBase(root);
+			int screenW = root.getWidth();
+			int screenH = root.getHeight();
 
-			lp.width = newWidth;
+			int newWidth  = (int)(base * data.nw * scaleX);
+			int newHeight = (int)(base * data.nh * scaleY);
+
+			lp.width  = newWidth;
 			lp.height = newHeight;
 
-			lp.leftMargin = (int)(root.getWidth() * getPosition(id)[0]) - (newWidth / 2);
-			lp.topMargin = (int)(root.getHeight() * getPosition(id)[1]) - (newHeight / 2);
+			float[] pos = getPosition(id);
+			lp.leftMargin = (int)(screenW * pos[0]) - (newWidth / 2);
+			lp.topMargin  = (int)(screenH * pos[1]) - (newHeight / 2);
 
 			btn.setLayoutParams(lp);
 		});
@@ -521,15 +533,12 @@ public class ButtonController {
 	public static void setTextScale(String id, float scale) {
 		MainActivity ctx = mainActivityRef.get();
 		ViewGroup root = viewRef.get();
-
 		if (ctx == null || root == null)
 			return;
 
 		ctx.runOnUiThread(() -> {
 			ButtonData data = buttons.get(id);
-			if (data == null)
-				return;
-
+			if (data == null) return;
 			data.button.setTextSize(
 					android.util.TypedValue.COMPLEX_UNIT_PX,
 					data.baseTextSize * scale
