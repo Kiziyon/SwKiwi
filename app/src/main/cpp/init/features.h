@@ -3,6 +3,7 @@
 
 void initF_cstrings(void);
 void initF_armor_models(void);
+void initF_armor_damage(void);
 void initF_achievements(void);
 
 #endif /* NEEDLE_INIT_FEATURES_H */

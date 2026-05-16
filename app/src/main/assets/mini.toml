@@ -64,3 +64,7 @@ engine_speed = 1
 #"" = "hiro"
 #"platearmor" = "hiro_plated"
 #"magicarmor" = "hiro_magicplated"
+
+[armor_attributes]
+"platearmor" = 0.5
+"magicarmor" = 0.25

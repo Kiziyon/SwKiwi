@@ -1,11 +1,12 @@
 #include "mini_config.h"
 
-#include "features/armor_models.h"
-#include "features/coin_limit.h"
 #include "config/config.h"
 #include "core/java.h"
-#include "libs/toml/toml.h"
 #include "core/log.h"
+#include "features/armor_damage.h"
+#include "features/armor_models.h"
+#include "features/coin_limit.h"
+#include "libs/toml/toml.h"
 
 #include <jni.h>
 #include <stdlib.h>
@@ -52,6 +53,23 @@ void read_mini_config_asset() {
 				free(model.u.s);
 			} else {
 				LOGD("Invalid Armor Model entry: %s", item);
+			}
+		}
+	}
+
+	// [armor_attributes]
+	toml_table_t *attributes = toml_table_table(tbl, "armor_attributes");
+	if (attributes != NULL) {
+		int num_fields = toml_table_len(attributes);
+		for (int i = 0; i < num_fields; i++) {
+			int field_len;
+			const char *item = toml_table_key(attributes, i, &field_len);
+
+			toml_value_t multiplier = toml_table_double(attributes, item);
+			if (multiplier.ok) {
+				miniAD_add_multiplier(item, (float)multiplier.u.d);
+			} else {
+				LOGD("Invalid Armor Attribute entry: %s", item);
 			}
 		}
 	}

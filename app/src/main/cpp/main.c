@@ -72,6 +72,7 @@ void midLoad() {
 	/* Features */
 	initF_cstrings();
 	initF_armor_models();
+	initF_armor_damage();
 	initF_achievements();
 	initLL_button();
 

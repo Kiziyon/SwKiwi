@@ -125,6 +125,7 @@ add_library(mini SHARED
 
         features/coin_limit.c
         features/armor_models.c
+        features/armor_damage.c
 
         features/cstrings/workarounds.c
         features/cstrings/register.c
