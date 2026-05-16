@@ -87,6 +87,7 @@ void midLoad() {
 	initLL_recreate_hero();
 	initLL_map_function();
 	initLL_character();
+	initLL_camera();
 
 	initLL_components();
 

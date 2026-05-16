@@ -95,12 +95,31 @@ static int GetUpVector(lua_State *L) {
 	return 1;
 }
 
+STATIC_DL_FUNCTION_SYMBOL(
+	SetPerspectiveProjection,
+	"_ZN5Caver6Camera24SetPerspectiveProjectionEffff",
+	void, (void *camera, float fov, float aspect, float near, float far)
+)
+
+static int L_SetPerspectiveProjection(lua_State *L) {
+	float fov = (float)lua_tonumber(L, 1);
+	float aspect = (float)lua_tonumber(L, 2);
+	float near = (float)lua_tonumber(L, 3);
+	float far = (float)lua_tonumber(L, 4);
+	void *cc = get_cc(L);
+	const void *camera = *$(void*, cc, 0x54, 0x58);
+	SetPerspectiveProjection(camera, fov, aspect, near, far);
+	return 0;
+}
+
 static const luaL_Reg camera_library[] = {
 	{"SetPositionOffset", SetCameraOffset},
 	{"GetPositionOffset", GetCameraOffset},
 
 	{"SetUpVector", SetUpVector},
 	{"GetUpVector", GetUpVector},
+
+	{"SetPerspectiveProjection", L_SetPerspectiveProjection},
 
 	{NULL, NULL}
 };
@@ -109,4 +128,8 @@ int miniLL_open_camera(lua_State *L) {
 	lua_newtable(L);
 	luaL_register(L, NULL, camera_library);
 	return 1;
+}
+
+void initLL_camera() {
+	dlsym_SetPerspectiveProjection();
 }
