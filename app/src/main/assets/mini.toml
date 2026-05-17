@@ -65,6 +65,8 @@ engine_speed = 1
 #"platearmor" = "hiro_plated"
 #"magicarmor" = "hiro_magicplated"
 
+# Map storing Armor Item IDs to their damage resistance.
+# This is pretty self-explanatory.
 [armor_attributes]
 "platearmor" = 0.5
 "magicarmor" = 0.25
