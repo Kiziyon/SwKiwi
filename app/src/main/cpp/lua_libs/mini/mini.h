@@ -11,6 +11,7 @@ int miniLL_toggle_debug(lua_State *L);
 int miniLL_recreate_hero(lua_State *L);
 int miniLL_get_arch(lua_State *L);
 int miniLL_the_map_function(lua_State *L);
+int miniLL_reload_textures(lua_State *L);
 
 int miniLL_test(lua_State *L);
 

@@ -10,6 +10,7 @@ void initLL_scene_find_all(void);
 void initLL_charanim();
 void initLL_button();
 void initLL_camera();
+void initLL_reload_textures();
 
 void initLL_test();
 

@@ -88,6 +88,7 @@ void midLoad() {
 	initLL_map_function();
 	initLL_character();
 	initLL_camera();
+	initLL_reload_textures();
 
 	initLL_components();
 

@@ -1,6 +1,6 @@
 #include "caver/components.h"
 #include "caver/scene_object.h"
-#include "caver/types.h"
+//#include "caver/types.h"
 #include "core/log.h"
 #include "init/lua_libs.h"
 #include "mini.h"

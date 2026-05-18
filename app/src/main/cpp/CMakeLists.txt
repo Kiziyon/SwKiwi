@@ -96,6 +96,7 @@ add_library(mini SHARED
         lua_libs/mini/scene_find_all.c
         lua_libs/mini/debug.c
         lua_libs/mini/recreate_hero.c
+        lua_libs/mini/reload_textures.c
         lua_libs/mini/the_map_function.c
 
         lua_libs/mini_health/health.c

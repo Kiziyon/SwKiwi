@@ -22,6 +22,8 @@ static const luaL_Reg mini_lib[] = {
 
 	{"RecreateHero",      miniLL_recreate_hero},
 
+	{"ReloadTextures", miniLL_reload_textures},
+
 	{"map",               miniLL_the_map_function},
 
 	{"Test", miniLL_test},
