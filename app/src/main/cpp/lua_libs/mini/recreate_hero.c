@@ -18,22 +18,6 @@ STATIC_DL_FUNCTION_SYMBOL(
 	void, (void *this, Vector3 *location, int facing_direction, bool addToScene)
 )
 
-STATIC_DL_FUNCTION_SYMBOL(
-	BlendToMoveAnimation,
-	"_ZN5Caver27CharAnimControllerComponent20BlendToMoveAnimationEf",
-	void, (void *CharAnimControllerComponent, float time)
-)
-
-int BlendToMoveAnim(lua_State *L) {
-	SceneObject **obj = lua_touserdata(L, 1);
-	void *comp = SceneObject_ComponentWithInterface(*obj, CharAnimControllerComponent_Interface); // Make sure to have #include "components/components.h"
-	BlendToMoveAnimation(comp, 1.0f);
-}
-
-void charanim_init() {
-	dlsym_BlendToMoveAnimation();
-}
-
 // Most of this logic comes from an if block in GameSceneController::EquipItem.
 // It's the block with the CreateHeroObjectAt call.
 int miniLL_recreate_hero(lua_State *L) {
